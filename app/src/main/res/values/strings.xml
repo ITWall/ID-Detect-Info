@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">IDScanner</string>
+    <string name="dialog_choose_result_header">Chọn kết quả</string>
+    <string name="dialog_choose_result_ok">Đồng ý</string>
+    <string name="dialog_choose_result_cancel">Hủy bỏ</string>
+    <string name="dialog_choose_result_choose_no_result">Hãy chọn một kết quả</string>
+</resources>

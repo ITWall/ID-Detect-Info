@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "310178305340",
+    "firebase_url": "https://idscanner-81069.firebaseio.com",
+    "project_id": "idscanner-81069",
+    "storage_bucket": "idscanner-81069.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:310178305340:android:ab7b32392c741200",
+        "android_client_info": {
+          "package_name": "com.viettel.idscanner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "310178305340-4bg54f9rltq7h1c7dlef7ramp7c2cq85.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMapw3CrXnWDclr2YG7fTMQx0khQAz4kQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
