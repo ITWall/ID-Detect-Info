@@ -1,4 +1,4 @@
-apply plugin: 'com.android.library'
+apply plugin: 'com.android.application'
 
 project.ext.ASSET_DIR = projectDir.toString() + '/src/main/assets'
 
@@ -8,7 +8,7 @@ assert file(project.ext.ASSET_DIR + "/labels.txt").exists()
 android {
     compileSdkVersion 27
     defaultConfig {
-//        applicationId "com.viettel.idscanner"
+        applicationId "com.viettel.idscanner"
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 1

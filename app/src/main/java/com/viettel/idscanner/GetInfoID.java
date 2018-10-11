@@ -30,6 +30,7 @@ public class GetInfoID {
     private static final String DICT_PATH = "dict.txt";
     private OnGettingInfoListener onGettingInfoListener;
     private ProgressDialog mProgressDialog;
+    private Map<String, String> infoMap = new HashMap<>();
 
     public GetInfoID(Bitmap bitmap, Activity activity, OnGettingInfoListener mOnGettingInfoListener, Map<String, List<String>> dictionary) {
         this.bitmap = bitmap;
@@ -62,7 +63,7 @@ public class GetInfoID {
     private void detectInfo(final ImageClassifier classifier, final Bitmap bitmap, final int degree) {
         final Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 224, 224, true);
         final Bitmap finalBitmap = rotateBitmap(bitmap, degree);
-        Toast.makeText(mActivity, "" + degree, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(mActivity, "" + degree, Toast.LENGTH_SHORT).show();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -84,14 +85,15 @@ public class GetInfoID {
                             textRecognizer.processImage(image).addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
                                 @Override
                                 public void onSuccess(FirebaseVisionText visionText) {
-                                    Map<String, String> infoMap = getInfoMap(visionText);
+                                    infoMap = getInfoMap(visionText);
+                                    infoMap.put("Type", CMT_TYPE.THE_CAN_CUOC.name());
                                     if (degree == 270) {
                                         mProgressDialog.dismiss();
                                         onGettingInfoListener.onSuccess(infoMap);
                                         return;
                                     }
                                     for (Map.Entry<String, String> entry: infoMap.entrySet()) {
-                                        if (entry.getKey().equalsIgnoreCase("Gender")) {
+                                        if (entry.getKey().equalsIgnoreCase("Gender") || entry.getKey().equalsIgnoreCase("Type")) {
                                             continue;
                                         }
                                         if (!entry.getValue().equalsIgnoreCase("")) {
@@ -114,8 +116,10 @@ public class GetInfoID {
                             mActivity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    infoMap.put("Type", textToShow.split("\n")[1].split(":")[0].toUpperCase().replace(" ", "_").trim());
                                     mProgressDialog.dismiss();
-                                    Toast.makeText(mActivity, "Bạn phải đặt thẻ căn cước vào", Toast.LENGTH_SHORT).show();
+//                                    Toast.makeText(mActivity, "Bạn phải đặt thẻ căn cước vào", Toast.LENGTH_SHORT).show();
+                                    onGettingInfoListener.onFailed(infoMap);
                                 }
                             });
                         }
@@ -333,4 +337,6 @@ public class GetInfoID {
         }
         return fullnameList;
     }
+
+    public enum CMT_TYPE {NOT_CMT, THE_CAN_CUOC, CMT_CU}
 }

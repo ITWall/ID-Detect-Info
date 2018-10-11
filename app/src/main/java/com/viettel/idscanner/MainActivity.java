@@ -78,11 +78,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-//        switch (view.getId()) {
-//            case R.id.iv_pick_image:
-//                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-//                startActivityForResult(intent, REQUEST_PICK_IMAGE);
-//        }
+        switch (view.getId()) {
+            case R.id.iv_pick_image:
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                startActivityForResult(intent, REQUEST_PICK_IMAGE);
+        }
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -138,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onSuccess(Map<String, String> info) {
+        Toast.makeText(this, ""+info.get("Type"), Toast.LENGTH_SHORT).show();
         infoMap = info;
         String allName = infoMap.get("Name");
         if (allName != null && !allName.equals("")) {
@@ -154,6 +155,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             showInfo(infoMap);
         }
+    }
 
+    @Override
+    public void onFailed(Map<String, String> info) {
+        Toast.makeText(this, ""+info.get("Type"), Toast.LENGTH_SHORT).show();
     }
 }
