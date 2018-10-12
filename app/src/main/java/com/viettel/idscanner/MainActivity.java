@@ -10,9 +10,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String DICT_PATH = "dict.txt";
     private final String error = "UNKNOWN";
     private Map<String, String> infoMap;
-    private ChooseNameDialog chooseNameDialog;
+    private ChooseNameDialogSample chooseNameDialogSample;
     private ArrayList<String> allPossibleName;
     private final static String TAG = "dialogTag";
     private final static String INFO = "infoMap";
@@ -50,9 +48,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
         initData();
         if (savedInstanceState != null) {
-            chooseNameDialog = (ChooseNameDialog) getSupportFragmentManager().findFragmentByTag(TAG);
-            if (chooseNameDialog != null) {
-                chooseNameDialog.setOnChoosingNameListener(this);
+            chooseNameDialogSample = (ChooseNameDialogSample) getSupportFragmentManager().findFragmentByTag(TAG);
+            if (chooseNameDialogSample != null) {
+                chooseNameDialogSample.setOnChoosingNameListener(this);
             }
             infoMap = (Map<String, String>) savedInstanceState.get(INFO);
         }
@@ -157,11 +155,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else {
                 allPossibleName = new ArrayList<>();
                 Collections.addAll(allPossibleName, possibleName);
-                chooseNameDialog = new ChooseNameDialog()
+                chooseNameDialogSample = new ChooseNameDialogSample()
                         .setAllPossibleName(allPossibleName)
                         .setOnChoosingNameListener(this);
-                chooseNameDialog.setCancelable(false);
-                chooseNameDialog.show(getSupportFragmentManager(), TAG);
+                chooseNameDialogSample.setCancelable(false);
+                chooseNameDialogSample.show(getSupportFragmentManager(), TAG);
             }
         } else {
             showInfo(infoMap);
@@ -188,8 +186,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (chooseNameDialog != null && chooseNameDialog.getDialog() != null) {
-            chooseNameDialog.onResume();
+        if (chooseNameDialogSample != null && chooseNameDialogSample.getDialog() != null) {
+            chooseNameDialogSample.onResume();
         }
     }
 }
