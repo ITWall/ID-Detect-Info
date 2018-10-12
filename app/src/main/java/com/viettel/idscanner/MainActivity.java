@@ -1,47 +1,31 @@
 package com.viettel.idscanner;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.Cursor;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.ml.vision.FirebaseVision;
-import com.google.firebase.ml.vision.common.FirebaseVisionImage;
-import com.google.firebase.ml.vision.face.FirebaseVisionFace;
-import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector;
-import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
-import com.google.firebase.ml.vision.label.FirebaseVisionLabel;
-import com.google.firebase.ml.vision.label.FirebaseVisionLabelDetector;
-import com.google.firebase.ml.vision.label.FirebaseVisionLabelDetectorOptions;
-import com.google.firebase.ml.vision.text.FirebaseVisionText;
-import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeMap;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, OnChoosingNameListener, OnGettingInfoListener {
@@ -53,6 +37,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String DICT_PATH = "dict.txt";
     private final String error = "UNKNOWN";
     private Map<String, String> infoMap;
+    private ChooseNameDialog chooseNameDialog;
+    private ArrayList<String> allPossibleName;
+    private final static String TAG = "dialogTag";
+    private final static String INFO = "infoMap";
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +49,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         initView();
         initData();
+        if (savedInstanceState != null) {
+            chooseNameDialog = (ChooseNameDialog) getSupportFragmentManager().findFragmentByTag(TAG);
+            if (chooseNameDialog != null) {
+                chooseNameDialog.setOnChoosingNameListener(this);
+            }
+            infoMap = (Map<String, String>) savedInstanceState.get(INFO);
+        }
     }
 
     private void initData() {
@@ -74,6 +70,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mIvPickImage = findViewById(R.id.iv_pick_image);
         mTvResultScan = findViewById(R.id.tv_result_scan);
         mIvPickImage.setOnClickListener(this);
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage("Đang xử lý ảnh");
+        mProgressDialog.setCancelable(false);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (outState != null) {
+            outState.putSerializable(INFO, (Serializable) infoMap);
+        }
     }
 
     @Override
@@ -139,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onSuccess(Map<String, String> info) {
         Toast.makeText(this, ""+info.get("Type"), Toast.LENGTH_SHORT).show();
+        mProgressDialog.dismiss();
         infoMap = info;
         String allName = infoMap.get("Name");
         if (allName != null && !allName.equals("")) {
@@ -147,10 +155,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 infoMap.put("Name", possibleName[0]);
                 showInfo(infoMap);
             } else {
-                ArrayList<String> allPossibleName = new ArrayList<>();
+                allPossibleName = new ArrayList<>();
                 Collections.addAll(allPossibleName, possibleName);
-                ChooseNameDialog chooseNameDialog = new ChooseNameDialog(this, allPossibleName, this);
-                chooseNameDialog.show();
+                chooseNameDialog = new ChooseNameDialog()
+                        .setAllPossibleName(allPossibleName)
+                        .setOnChoosingNameListener(this);
+                chooseNameDialog.setCancelable(false);
+                chooseNameDialog.show(getSupportFragmentManager(), TAG);
             }
         } else {
             showInfo(infoMap);
@@ -160,5 +171,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onFailed(Map<String, String> info) {
         Toast.makeText(this, ""+info.get("Type"), Toast.LENGTH_SHORT).show();
+        mProgressDialog.dismiss();
+    }
+
+    @Override
+    public void onProcessing() {
+        mProgressDialog.show();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mProgressDialog.dismiss();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (chooseNameDialog != null && chooseNameDialog.getDialog() != null) {
+            chooseNameDialog.onResume();
+        }
     }
 }

@@ -29,7 +29,7 @@ public class GetInfoID {
     private Map<String, List<String>> dictionary;
     private static final String DICT_PATH = "dict.txt";
     private OnGettingInfoListener onGettingInfoListener;
-    private ProgressDialog mProgressDialog;
+//    private ProgressDialog mProgressDialog;
     private Map<String, String> infoMap = new HashMap<>();
 
     public GetInfoID(Bitmap bitmap, Activity activity, OnGettingInfoListener mOnGettingInfoListener, Map<String, List<String>> dictionary) {
@@ -42,12 +42,12 @@ public class GetInfoID {
 
     public void getInfo() {
         try {
-            final Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 224, 224, true);
+//            final Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, 224, 224, true);
             final ImageClassifier classifier = new ImageClassifier(mActivity);
-            final Bitmap finalBitmap = bitmap;
-            mProgressDialog = new ProgressDialog(mActivity);
-            mProgressDialog.setMessage("Đang xử lý ảnh");
-            mProgressDialog.setCancelable(false);
+//            final Bitmap finalBitmap = bitmap;
+//            mProgressDialog = new ProgressDialog(mActivity);
+//            mProgressDialog.setMessage("Đang xử lý ảnh");
+//            mProgressDialog.setCancelable(false);
             detectInfo(classifier, bitmap, 0);
         } catch (IOException e) {
             e.printStackTrace();
@@ -73,7 +73,8 @@ public class GetInfoID {
                         @Override
                         public void run() {
                             if (degree == 0) {
-                                mProgressDialog.show();
+//                                mProgressDialog.show();
+                                onGettingInfoListener.onProcessing();
                             }
                         }
                     });
@@ -88,7 +89,7 @@ public class GetInfoID {
                                     infoMap = getInfoMap(visionText);
                                     infoMap.put("Type", CMT_TYPE.THE_CAN_CUOC.name());
                                     if (degree == 270) {
-                                        mProgressDialog.dismiss();
+//                                        mProgressDialog.dismiss();
                                         onGettingInfoListener.onSuccess(infoMap);
                                         return;
                                     }
@@ -97,7 +98,7 @@ public class GetInfoID {
                                             continue;
                                         }
                                         if (!entry.getValue().equalsIgnoreCase("")) {
-                                            mProgressDialog.dismiss();
+//                                            mProgressDialog.dismiss();
                                             onGettingInfoListener.onSuccess(infoMap);
                                             return;
                                         }
@@ -117,7 +118,7 @@ public class GetInfoID {
                                 @Override
                                 public void run() {
                                     infoMap.put("Type", textToShow.split("\n")[1].split(":")[0].toUpperCase().replace(" ", "_").trim());
-                                    mProgressDialog.dismiss();
+//                                    mProgressDialog.dismiss();
 //                                    Toast.makeText(mActivity, "Bạn phải đặt thẻ căn cước vào", Toast.LENGTH_SHORT).show();
                                     onGettingInfoListener.onFailed(infoMap);
                                 }
@@ -279,6 +280,7 @@ public class GetInfoID {
             return null;
         } else {
             String[] nameParts = formattedTextLine.split("\\s");
+//            String[] nameParts = new String[] {"NGUYEN", "SON", "TUNG", "HIEU", "TRUNG"};
             for (String part : nameParts) {
                 try {
                     List<String> listWordInPart = dictionary.get(part);
